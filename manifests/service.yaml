@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: study-buddy-ai-service
+spec:
+  selector:
+    app: study-buddy-ai
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+  type: NodePort
