@@ -27,7 +27,7 @@ This app enables **interactive learning** by automatically generating quiz quest
 
 ---
 
-## 📂 Project Structure
+## 📂 Required Project Structure
 
 ```text
 ├── app.py                  # Main Streamlit app
