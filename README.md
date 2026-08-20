@@ -43,7 +43,7 @@ streamlit run app.py
 
 Get a free Groq API key at [console.groq.com/keys](https://console.groq.com/keys).
 
-`MODEL_NAME` and `TEMPERATURE` are optional and fall back to `llama-3.1-8b-instant` / `0.9`.
+`MODEL_NAME` and `TEMPERATURE` are optional and fall back to `openai/gpt-oss-20b` / `0.9`.
 
 ### Docker
 

@@ -27,7 +27,7 @@ class Settings():
 
     GROQ_API_KEY = _get("GROQ_API_KEY")
 
-    MODEL_NAME = _get("MODEL_NAME", "llama-3.1-8b-instant")
+    MODEL_NAME = _get("MODEL_NAME", "openai/gpt-oss-20b")
 
     TEMPERATURE = float(_get("TEMPERATURE", 0.9))
 
