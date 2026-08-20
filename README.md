@@ -27,6 +27,39 @@ This app enables **interactive learning** by automatically generating quiz quest
 
 ---
 
+## ⚡ Local Setup
+
+```bash
+git clone https://github.com/Prathap0703/Study-Buddy-AI.git
+cd Study-Buddy-AI
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+cp .env.example .env            # then add your GROQ_API_KEY
+streamlit run app.py
+```
+
+Get a free Groq API key at [console.groq.com/keys](https://console.groq.com/keys).
+
+`MODEL_NAME` and `TEMPERATURE` are optional and fall back to `openai/gpt-oss-20b` / `0.9`.
+
+### Docker
+
+```bash
+docker build -t study-buddy-ai .
+docker run -p 8501:8501 --env-file .env study-buddy-ai
+```
+
+### Deploying to Streamlit Cloud
+
+There is no `.env` on Streamlit Cloud, so set `GROQ_API_KEY` in the app's
+**Secrets** instead — the config layer reads environment variables first and
+falls back to `st.secrets`.
+
+---
+
 ## 📂 Required Project Structure
 
 ```text
