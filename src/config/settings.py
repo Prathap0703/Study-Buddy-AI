@@ -12,15 +12,20 @@ def _get(name, default=None):
     so we fall back to st.secrets there.
     """
     value = os.getenv(name)
-    if value is not None:
-        return value
+    if value is not None and value.strip():
+        return value.strip()
 
+    # A blank environment variable must not shadow the secrets fallback, which
+    # is why the check above tests the value rather than just its presence.
     try:
         import streamlit as st
 
-        return st.secrets[name]
+        value = st.secrets[name]
     except Exception:
         return default
+
+    value = str(value).strip()
+    return value if value else default
 
 
 class Settings():
