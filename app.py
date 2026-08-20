@@ -52,7 +52,14 @@ def main():
         st.session_state.quiz_submitted = False
         st.session_state.saved_file = None
 
-        generator = QuestionGenerator()
+        # building the generator can fail on missing/invalid config, and that
+        # happens outside generate_questions' own error handling
+        try:
+            generator = QuestionGenerator()
+        except Exception as e:
+            st.error(f"⚠️ {e}")
+            st.stop()
+
         succces = st.session_state.quiz_manager.generate_questions(
             generator,
             topic,question_type,difficulty,num_questions

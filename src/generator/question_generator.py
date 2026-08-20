@@ -1,3 +1,4 @@
+from groq import AuthenticationError, NotFoundError
 from langchain_core.output_parsers import PydanticOutputParser
 from src.models.question_schemas import MCQQuestion,FillBlankQuestion
 from src.prompts.templates import mcq_prompt_template,fill_blank_prompt_template
@@ -25,7 +26,30 @@ class QuestionGenerator:
                 self.logger.info("Sucesfully parsed the question")
 
                 return parsed
-            
+
+            except NotFoundError as e:
+                # A retired or inaccessible model fails identically on every
+                # attempt, so retrying just delays the error by three round
+                # trips and buries the cause under a generic message.
+                self.logger.error(f"Model '{settings.MODEL_NAME}' unavailable : {str(e)}")
+                raise CustomException(
+                    f"The model '{settings.MODEL_NAME}' is not available on your Groq "
+                    f"account - it has most likely been retired. Pick a current model "
+                    f"from https://console.groq.com/docs/models and set MODEL_NAME in "
+                    f"your .env (or in the app secrets when deploying).",
+                    show_details=False
+                ) from e
+
+            except AuthenticationError as e:
+                # Same reasoning: a rejected key will not start working on retry.
+                self.logger.error(f"Groq rejected the API key : {str(e)}")
+                raise CustomException(
+                    "Groq rejected the API key. Check GROQ_API_KEY in your .env "
+                    "(or in the app secrets when deploying) - you can issue a new "
+                    "key at https://console.groq.com/keys.",
+                    show_details=False
+                ) from e
+
             except Exception as e:
                 self.logger.error(f"Error coming : {str(e)}")
                 if attempt==settings.MAX_RETRIES-1:
@@ -44,6 +68,9 @@ class QuestionGenerator:
             self.logger.info("Generated a valid MCQ Question")
             return question
         
+        except CustomException:
+            raise  # already carries an actionable message
+
         except Exception as e:
             self.logger.error(f"Failed to generate MCQ : {str(e)}")
             raise CustomException("MCQ generation failed" , e)
@@ -61,6 +88,9 @@ class QuestionGenerator:
             self.logger.info("Generated a valid Fill in Blanks Question")
             return question
         
+        except CustomException:
+            raise  # already carries an actionable message
+
         except Exception as e:
             self.logger.error(f"Failed to generate fillups : {str(e)}")
             raise CustomException("Fill in blanks generation failed" , e)
