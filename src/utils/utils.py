@@ -5,7 +5,7 @@ from src.generator.question_generator import QuestionGenerator
 
 
 def rerun():
-    st.session_state['rerun_trigger'] = not st.session_state.get('rerun_trigger', False)
+    st.rerun()
 
 
 class QuizManager:

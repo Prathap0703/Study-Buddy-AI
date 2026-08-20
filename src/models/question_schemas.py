@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel,Field,validator
+from pydantic import BaseModel,Field,field_validator
 
 class MCQQuestion(BaseModel):
 
@@ -9,7 +9,8 @@ class MCQQuestion(BaseModel):
 
     correct_answer: str = Field(description="The correct answer from the options")
 
-    @validator('question' , pre=True)
+    @field_validator('question' , mode='before')
+    @classmethod
     def clean_question(cls,v):
         if isinstance(v,dict):
             return v.get('description' , str(v))
@@ -22,7 +23,8 @@ class FillBlankQuestion(BaseModel):
 
     answer : str = Field(description="The correct word or phrase for the blank")
 
-    @validator('question' , pre=True)
+    @field_validator('question' , mode='before')
+    @classmethod
     def clean_question(cls,v):
         if isinstance(v,dict):
             return v.get('description' , str(v))

@@ -18,9 +18,9 @@ def main():
     if 'quiz_submitted'not in st.session_state:
         st.session_state.quiz_submitted = False
 
-    if 'rerun_trigger'not in st.session_state:
-        st.session_state.rerun_trigger = False
-        
+    if 'saved_file'not in st.session_state:
+        st.session_state.saved_file = None
+
 
     st.title("Study Buddy AI")
 
@@ -35,7 +35,7 @@ def main():
     topic = st.sidebar.text_input("Enter Topic")
 
     difficulty = st.sidebar.selectbox(
-        "Dificulty Level",
+        "Difficulty Level",
         ["Easy" , "Medium" , "Hard"],
         index=1
     )
@@ -50,6 +50,7 @@ def main():
     
     if st.sidebar.button("Generate Quiz"):
         st.session_state.quiz_submitted = False
+        st.session_state.saved_file = None
 
         generator = QuestionGenerator()
         succces = st.session_state.quiz_manager.generate_questions(
@@ -81,7 +82,7 @@ def main():
             correct_count = results_df["is_correct"].sum()
             total_questions = len(results_df)
             score_percentage = (correct_count/total_questions)*100
-            st.write(f"Score : {score_percentage}")
+            st.write(f"Score : {score_percentage:.1f}% ({correct_count}/{total_questions})")
 
             for _, result in results_df.iterrows():
                 question_num = result['question_number']
@@ -96,17 +97,17 @@ def main():
 
             
             if st.button("Save Results"):
-                saved_file = st.session_state.quiz_manager.save_to_csv()
-                if saved_file:
-                    with open(saved_file,'rb') as f:
-                        st.download_button(
-                            label="Downlaod Results",
-                            data=f.read(),
-                            file_name=os.path.basename(saved_file),
-                            mime='text/csv'
-                        )
-                else:
-                    st.warning("No results avialble")
+                st.session_state.saved_file = st.session_state.quiz_manager.save_to_csv()
+
+            saved_file = st.session_state.saved_file
+            if saved_file and os.path.exists(saved_file):
+                with open(saved_file,'rb') as f:
+                    st.download_button(
+                        label="Download Results",
+                        data=f.read(),
+                        file_name=os.path.basename(saved_file),
+                        mime='text/csv'
+                    )
 
 if __name__=="__main__":
     main()
